@@ -11,7 +11,10 @@ export default function DrawingBox() {
     if (!canvas) return;
     const context = canvas.getContext("2d");
     if (!context) return;
-    context.lineWidth = 20;
+    context.strokeStyle = "black";
+    context.lineWidth = 40;
+    context.lineCap = "round";
+    context.lineJoin = "round";
 
     let isDrawing = false;
     let lastX = 0;
