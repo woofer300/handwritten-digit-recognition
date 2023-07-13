@@ -3,8 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import Button from "@/app/Button";
 
+type PredictedNumAndConfidence = {
+  prediction: number;
+  confidence: number;
+};
+
 export default function DrawingBox() {
-  const [predictedNum, setPredictedNum] = useState(null);
+  const [predictedNumAndConfidence, setPredictedNumAndConfidence] =
+    useState<PredictedNumAndConfidence | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -78,15 +84,16 @@ export default function DrawingBox() {
     if (!canvas) return;
 
     const image = canvas.toDataURL("image/png");
-    const predictedNum = await fetch(
-      "http://127.0.0.1:5000/api/receive_image",
-      {
-        method: "POST",
-        body: image,
-        cache: "no-store",
-      },
+    const response = await fetch("http://127.0.0.1:5000/api/receive_image", {
+      method: "POST",
+      body: image,
+      cache: "no-store",
+    });
+    const responseJson: PredictedNumAndConfidence = await response.json();
+    responseJson.confidence = parseFloat(
+      (responseJson.confidence * 100).toFixed(2),
     );
-    // setPredictedNum(predictedNum)
+    setPredictedNumAndConfidence(responseJson);
   }
 
   return (
@@ -97,7 +104,14 @@ export default function DrawingBox() {
         height={450}
         className="border-4 border-gray-700 bg-white m-5 rounded-md"
       />
-      {predictedNum && <p>Predicted number: {predictedNum}</p>}
+      {predictedNumAndConfidence && (
+        <>
+          <p>Predicted number: {predictedNumAndConfidence.prediction}</p>
+          <p className="mb-5">
+            Confidence: {predictedNumAndConfidence.confidence + "%"}
+          </p>
+        </>
+      )}
       <div>
         <Button onClick={clearCanvas}>Clear</Button>
         <Button onClick={submitCanvas}>Submit</Button>
