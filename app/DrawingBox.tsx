@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "@/app/Button";
 
 export default function DrawingBox() {
+  const [predictedNum, setPredictedNum] = useState(null);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -65,6 +67,22 @@ export default function DrawingBox() {
     context.clearRect(0, 0, canvas.width, canvas.height);
   }
 
+  async function submitCanvas() {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const image = canvas.toDataURL("image/png");
+    const predictedNum = await fetch(
+      "http://127.0.0.1:5000/api/receive_image",
+      {
+        method: "POST",
+        body: image,
+        cache: "no-store",
+      },
+    );
+    // setPredictedNum(predictedNum)
+  }
+
   return (
     <>
       <canvas
@@ -73,9 +91,10 @@ export default function DrawingBox() {
         height={450}
         className="border-4 border-gray-700 bg-white m-5 rounded-md"
       />
+      {predictedNum && <p>Predicted number: {predictedNum}</p>}
       <div>
         <Button onClick={clearCanvas}>Clear</Button>
-        <Button onClick={clearCanvas}>Submit</Button>
+        <Button onClick={submitCanvas}>Submit</Button>
       </div>
     </>
   );
