@@ -45,13 +45,19 @@ export default function DrawingBox() {
       isDrawing = false;
     };
 
-    canvas.addEventListener("mousedown", startDrawing);
+    canvas.addEventListener("mousedown", (e) => {
+      startDrawing(e);
+      draw(e);
+    });
     canvas.addEventListener("mousemove", draw);
     canvas.addEventListener("mouseup", stopDrawing);
     canvas.addEventListener("mouseout", stopDrawing);
 
     return () => {
-      canvas.removeEventListener("mousedown", startDrawing);
+      canvas.removeEventListener("mousedown", (e) => {
+        startDrawing(e);
+        draw(e);
+      });
       canvas.removeEventListener("mousemove", draw);
       canvas.removeEventListener("mouseup", stopDrawing);
       canvas.removeEventListener("mouseout", stopDrawing);
