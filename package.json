@@ -1,5 +1,5 @@
 {
-  "name": "handwritten-digit-recognition-client",
+  "name": "handwritten-digit-recognition",
   "version": "0.1.0",
   "private": true,
   "scripts": {
